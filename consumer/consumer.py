@@ -24,8 +24,6 @@ def callback(ch, method, properties, body):
 # Set up the consumer to receive messages.
 channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
 
-print("Waiting for messages. To exit, press CTRL+C")
-
 # Start consuming messages in a loop.
 while True:
     connection.process_data_events()
