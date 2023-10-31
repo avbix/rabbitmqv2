@@ -9,18 +9,24 @@ connection = pika.BlockingConnection(url_params)
 
 channel = connection.channel()
 
+# Define the queue name.
+queue_name = 'my_queue'
+
+# Declare the queue.
+channel.queue_declare(queue=queue_name)
+
 # Function to process received messages.
 def callback(ch, method, properties, body):
     print(f"Received message: {body}")
     # You can add your processing logic here
 
 def consume():
-    # Устанавливаем функцию обратного вызова для обработки сообщений
-    channel.basic_consume(queue='your_queue_name', on_message_callback=callback, auto_ack=True)
+    # Set the callback function to process messages
+    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
 
     print('Waiting for messages. To exit press CTRL+C')
 
-    # Начинаем получать сообщения из очереди
+    # Start consuming messages from the queue
     channel.start_consuming()
 
 consume()
