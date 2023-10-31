@@ -1,6 +1,5 @@
 # Import the 'pika' library for RabbitMQ communication.
 import pika
-import time
 
 # Parse the AMQP URL to extract connection parameters.
 url_params = pika.URLParameters('amqp://rabbit_mq?connection_attempts=10&retry_delay=10')
@@ -10,24 +9,21 @@ connection = pika.BlockingConnection(url_params)
 
 channel = connection.channel()
 
-# Define the queue name.
-queue_name = 'my_queue'
-
-# Declare the queue.
-channel.queue_declare(queue=queue_name)
-
 # Function to process received messages.
 def callback(ch, method, properties, body):
     print(f"Received message: {body}")
     # You can add your processing logic here
 
-# Set up the consumer to receive messages.
-channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+def consume():
+    # Устанавливаем функцию обратного вызова для обработки сообщений
+    channel.basic_consume(queue='your_queue_name', on_message_callback=callback, auto_ack=True)
 
-# Start consuming messages in a loop.
-while True:
-    connection.process_data_events()
-    time.sleep(2)  # Wait for 2 seconds before checking for the next message.
+    print('Waiting for messages. To exit press CTRL+C')
+
+    # Начинаем получать сообщения из очереди
+    channel.start_consuming()
+
+consume()
 
 # Close the channel.
 channel.close()
